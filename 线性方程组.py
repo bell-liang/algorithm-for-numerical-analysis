@@ -59,12 +59,28 @@ def caculate_square_root_method(A):
     A[1:, 0] = A[1:, 0] / A[0, 0]
     A[0, 1:] = A[1:, 0]
     for i in range(1, len(A)-1):
-        A[i, i] = math.sqrt(A[i, i] - np.sum(A[i, :i] ** 2))
+        print(A[i, i] - np.sum(A[i, :i] ** 2))
+        A[i, i] = math.sqrt(abs(A[i, i] - np.sum(A[i, :i] ** 2)))
         for j in range(i+1, len(A)):
             A[j, i] = A[j, i] - A[j, :i].dot(A[:i, i])
         A[i, i+1:] = A[i+1:, i]
     A[-1, -1] = math.sqrt(A[-1, -1] - np.sum(A[-1, :-1] ** 2))
+    print(A)
     return(A)
+
+def caculate_square_root_method_y(A, b):
+    y = np.zeros(len(A))
+    y[0] = b[0] / A[0, 0]
+    for i in range(1, len(A)):
+        y[i] = (b[i] - A[i, :i].dot(y[:i])) / A[i, i]
+    return(y)
+
+def caculate_square_root_method_x(A, y):
+    x = np.zeros(len(A))
+    x[-1] = y[-1] / A[-1, -1]
+    for i in range(2, len(A)+1):
+        x[-i] = (y[-2] - A[-i, -i:].dot(x[-i:])) / A[-i, -i]
+    return(x)
     
 def caculate_improved_square_root_method(A):
     A[1:, 0] = A[1:, 0] / A[0, 0]
@@ -142,6 +158,11 @@ LDL_T = caculate_improved_square_root_method(A3)
 y3 = caculate_improved_square_root_method_y(LDL_T, b3)
 x3 = caculate_improved_square_root_method_x(LDL_T, y3)
 
+
+LL_T = caculate_square_root_method(A3)
+y4 = caculate_square_root_method_y(LL_T, b3)
+x4 = caculate_square_root_method_x(LL_T, y4)
+
 # page-177-practice-9
 A4 = np.zeros((5, 5))
 A4[0, 0] = 2.
@@ -155,5 +176,5 @@ A4[-1, -1] = 2.
 b4 = np.zeros(len(A4))
 b4[0] = 1
 LU = cacualte_chase_method(A4)
-y4 = cacualte_chase_method_y(LU, b4)
-x4 = cacualte_chase_method_x(LU, y4)
+y5 = cacualte_chase_method_y(LU, b4)
+x5 = cacualte_chase_method_x(LU, y5)
