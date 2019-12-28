@@ -6,6 +6,7 @@ Created on Sun Dec 15 19:17:49 2019
 """
 # 特征值估计之幂法、反幂法
 import numpy as np
+import math
 
 def caculate_power_method(A, v0, k):
     u = v0
@@ -66,6 +67,31 @@ def caculate_inverse_power_method(A, P, v0, k, p):
         print("k:", i+1, '\n', v,'\n', m, '\n', u)
     return 1 / m + p
 
+def caculate_householder_transformation(x):
+    x = x.reshape(-1, 1).copy()
+    a = x[0] / abs(x[0]) * math.sqrt(sum(x ** 2))
+    x[0] += a
+    u = x
+    b = 1 / 2 * sum(u ** 2)
+    return np.eye(len(x)) - 1 / b * u.dot(u.T)
+
+def caculate_QR_decompose(A):
+    H = caculate_householder_transformation(A[0:, 0])
+    print("H1:", H)
+    R = H.dot(A)
+    Q = H
+    print(A)
+    print("R:", R)
+    for i in range(1, len(A)-1):
+        H = np.eye(len(A))
+        H[i:, i:] = caculate_householder_transformation(R[i:, i])
+        print("H", i+1, H)
+        R = H.dot(R)
+        print(R)
+        Q = H.dot(Q)
+    return(-(Q.T), -R)
+    
+
 # page-248-example-2
 A = np.array([[1., 1., 0.5],
               [1., 1., 0.25],
@@ -90,3 +116,13 @@ v0 = np.array([1., 1., 1.])
 k2 = 3
 p1 = 1.2679
 u2 = caculate_inverse_power_method(A1, P, v0, k2, p1)
+
+# page-256-example-6
+x = np.array([3., 5., 1., 1.])
+H = caculate_householder_transformation(x)
+
+# page-260-example-7
+A = np.array([[2., -2., 3.],
+              [1., 1., 1.],
+              [1., 3., -1]])
+Q, R = caculate_QR_decompose(A)
